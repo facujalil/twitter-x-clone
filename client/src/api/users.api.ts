@@ -6,33 +6,39 @@ export const registerUser = async (
   username: string,
   password: string
 ) => {
-  const res = await fetch("http://localhost:3001/api/users/register-user", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      email: email,
-      displayName: displayName,
-      username: username,
-      password: password,
-    }),
-  });
+  const res = await fetch(
+    "https://twitter-x-clone-production.up.railway.app/api/users/register-user",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        email: email,
+        displayName: displayName,
+        username: username,
+        password: password,
+      }),
+    }
+  );
   const data = await res.json();
   return data;
 };
 
 export const loginUser = async (username: string, password: string) => {
-  const res = await fetch("http://localhost:3001/api/users/login-user", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      username: username,
-      password: password,
-    }),
-  });
+  const res = await fetch(
+    "https://twitter-x-clone-production.up.railway.app/api/users/login-user",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        username: username,
+        password: password,
+      }),
+    }
+  );
   if (res.status === 200) {
     const data = await res.json();
     localStorage.setItem("token", data.token);
@@ -42,7 +48,7 @@ export const loginUser = async (username: string, password: string) => {
 
 export const editProfile = async (userId: number, formData: FormData) => {
   const res = await fetch(
-    `http://localhost:3001/api/users/edit-profile/${userId}`,
+    `https://twitter-x-clone-production.up.railway.app/api/users/edit-profile/${userId}`,
     {
       method: "PUT",
       headers: {
@@ -57,7 +63,7 @@ export const editProfile = async (userId: number, formData: FormData) => {
 
 export const getUserData = async (userId: number) => {
   const res = await fetch(
-    `http://localhost:3001/api/users/user-data/${userId}`,
+    `https://twitter-x-clone-production.up.railway.app/api/users/user-data/${userId}`,
     {
       method: "GET",
       headers: {
@@ -74,7 +80,7 @@ export const getUserData = async (userId: number) => {
 
 export const getUserProfileData = async (userId: number) => {
   const res = await fetch(
-    `http://localhost:3001/api/users/user-profile-data/${userId}`
+    `https://twitter-x-clone-production.up.railway.app/api/users/user-profile-data/${userId}`
   );
   const data = await res.json();
   if (res.status === 200) {
@@ -84,7 +90,7 @@ export const getUserProfileData = async (userId: number) => {
 
 export const getRecommendedUsers = async (userId: number) => {
   const res = await fetch(
-    `http://localhost:3001/api/users/recommended-users/${userId}`
+    `https://twitter-x-clone-production.up.railway.app/api/users/recommended-users/${userId}`
   );
   const data = await res.json();
   return data;
@@ -92,7 +98,7 @@ export const getRecommendedUsers = async (userId: number) => {
 
 export const getNotifications = async (userId: number) => {
   const res = await fetch(
-    `http://localhost:3001/api/users/notifications/${userId}`,
+    `https://twitter-x-clone-production.up.railway.app/api/users/notifications/${userId}`,
     {
       method: "GET",
       headers: {
@@ -106,43 +112,52 @@ export const getNotifications = async (userId: number) => {
 };
 
 export const clearNotifications = async (userId: number) => {
-  await fetch("http://localhost:3001/api/users/clear-notifications", {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-    body: JSON.stringify({
-      toUserId: userId,
-      Authorization: "Bearer " + token,
-    }),
-  });
+  await fetch(
+    "https://twitter-x-clone-production.up.railway.app/api/users/clear-notifications",
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        toUserId: userId,
+        Authorization: "Bearer " + token,
+      }),
+    }
+  );
 };
 
 export const followUser = async (userId: number, followingId: number) => {
-  await fetch("http://localhost:3001/api/users/follow-user", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-    body: JSON.stringify({
-      followerId: userId,
-      followingId: followingId,
-    }),
-  });
+  await fetch(
+    "https://twitter-x-clone-production.up.railway.app/api/users/follow-user",
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        followerId: userId,
+        followingId: followingId,
+      }),
+    }
+  );
 };
 
 export const unfollowUser = async (userId: number, followingId: number) => {
-  await fetch("http://localhost:3001/api/users/unfollow-user", {
-    method: "DELETE",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: "Bearer " + token,
-    },
-    body: JSON.stringify({
-      followerId: userId,
-      followingId: followingId,
-    }),
-  });
+  await fetch(
+    "https://twitter-x-clone-production.up.railway.app/api/users/unfollow-user",
+    {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + token,
+      },
+      body: JSON.stringify({
+        followerId: userId,
+        followingId: followingId,
+      }),
+    }
+  );
 };

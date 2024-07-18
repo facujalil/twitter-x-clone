@@ -1,0 +1,13 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+html {
+  @apply md:text-[14px] xs:text-[12.5px];
+}
+
+body {
+  @apply overflow-x-hidden w-full h-full min-h-screen text-white bg-black font-roboto;
+}

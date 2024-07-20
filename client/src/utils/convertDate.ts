@@ -1,7 +1,7 @@
 export const convertDate = (elapsedTime: number, creationDate: number) => {
-  const secondsElapsed = Math.round(elapsedTime);
-  const minutsElapsed = Math.round(elapsedTime / 60);
-  const hoursElapsed = Math.round(elapsedTime / 3600);
+  const elapsedSeconds = Math.floor(elapsedTime);
+  const elapsedMinutes = Math.floor(elapsedTime / 60);
+  const elapsedHours = Math.floor(elapsedTime / 3600);
 
   const creationDay =
     Number(creationDate.toString().slice(8, 9)) === 0
@@ -14,14 +14,14 @@ export const convertDate = (elapsedTime: number, creationDate: number) => {
 
   const currentYear = new Date().getFullYear();
 
-  if (secondsElapsed === 0) {
+  if (elapsedSeconds === 0) {
     return "Ahora";
-  } else if (secondsElapsed < 60) {
-    return `${secondsElapsed}s`;
-  } else if (minutsElapsed < 60) {
-    return `${minutsElapsed}min`;
-  } else if (hoursElapsed < 24) {
-    return `${hoursElapsed}h`;
+  } else if (elapsedSeconds < 60) {
+    return `${elapsedSeconds}s`;
+  } else if (elapsedMinutes < 60) {
+    return `${elapsedMinutes}min`;
+  } else if (elapsedHours < 24) {
+    return `${elapsedHours}h`;
   } else if (currentYear === creationYear) {
     return `${creationDay} ${creationMonth}.`;
   } else {

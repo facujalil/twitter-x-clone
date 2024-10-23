@@ -1,10 +1,10 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { loggedInUserId } from "./utils/localStorage";
-import AppLayout from "./components/AppLayout";
-import Home from "./pages/Home";
-import PostDetail from "./pages/PostDetail";
-import Profile from "./pages/Profile";
-import Notifications from "./pages/Notifications";
+import { authUserId } from "core/utils/localStorage";
+import AppLayout from "core/layout/AppLayout";
+import Home from "pages/Home";
+import PostDetail from "pages/PostDetail";
+import Profile from "pages/Profile/Profile";
+import Notifications from "pages/Notifications/Notifications";
 
 function App() {
   return (
@@ -16,7 +16,7 @@ function App() {
           <Route path="/users/:userId" element={<Profile />} />
           <Route
             path="/notifications"
-            element={loggedInUserId ? <Notifications /> : <Navigate to="/" />}
+            element={authUserId ? <Notifications /> : <Navigate to="/" />}
           />
           <Route path="/*" element={<Navigate to="/" />} />
         </Routes>

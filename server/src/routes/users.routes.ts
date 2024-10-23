@@ -4,13 +4,11 @@ import {
   editProfile,
   followUser,
   getRecommendedUsers,
-  getUserData,
-  getUserProfileData,
-  loginUser,
-  registerUser,
+  getAuthUser,
+  getUserProfile,
   unfollowUser,
   getNotifications,
-  clearNotifications,
+  markNotificationsAsRead,
 } from "../controllers/users.controller";
 import multer from "multer";
 
@@ -24,10 +22,6 @@ const storage = multer.diskStorage({
 
 const upload = multer({ storage: storage });
 
-router.post("/api/users/register-user", registerUser);
-
-router.post("/api/users/login-user", loginUser);
-
 router.put(
   "/api/users/edit-profile/:userId",
   authenticateToken,
@@ -35,9 +29,9 @@ router.put(
   editProfile
 );
 
-router.get("/api/users/user-data/:userId", authenticateToken, getUserData);
+router.get("/api/users/auth-user/:userId", authenticateToken, getAuthUser);
 
-router.get("/api/users/user-profile-data/:userId", getUserProfileData);
+router.get("/api/users/user-profile/:userId", getUserProfile);
 
 router.get("/api/users/recommended-users/:userId", getRecommendedUsers);
 
@@ -48,9 +42,9 @@ router.get(
 );
 
 router.put(
-  "/api/users/clear-notifications",
+  "/api/users/mark-notifications-as-read/:userId",
   authenticateToken,
-  clearNotifications
+  markNotificationsAsRead
 );
 
 router.post("/api/users/follow-user", authenticateToken, followUser);

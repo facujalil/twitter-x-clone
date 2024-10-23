@@ -1,43 +1,36 @@
-import React, { useContext, useEffect, useState } from "react";
-import { IPost, ILoggedInUser } from "../types";
-import { Context } from "../context/Context";
-import { loggedInUserId } from "../utils/localStorage";
-import { getPostsFromHome } from "../api/posts.api";
-import Header from "../components/Header";
-import PostForm from "../components/PostForm";
-import Posts from "../components/Posts";
-
-interface IContext {
-  loggedInUserData: ILoggedInUser;
-  setLoginModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  setRegisterModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import { useEffect, useState } from "react";
+import { useAppContext } from "core/context/AppContext";
+import { IPost } from "modules/posts/types/postTypes";
+import { authUserId } from "core/utils/localStorage";
+import { getHomePosts } from "modules/posts/api/posts.api";
+import Header from "core/components/Header";
+import PostForm from "modules/posts/components/PostForm";
+import Posts from "modules/posts/components/Posts";
 
 function Home() {
-  const { loggedInUserData, setLoginModalOpen, setRegisterModalOpen } =
-    useContext(Context) as IContext;
+  const { authUser, setOpenModal } = useAppContext();
 
-  const [postsFromHomeLoading, setPostsFromHomeLoading] = useState(true);
-  const [postsFromHome, setPostsFromHome] = useState<IPost[]>([]);
+  const [homePosts, setHomePosts] = useState<IPost[]>([]);
+  const [homePostsLoading, setHomePostsLoading] = useState(true);
 
   useEffect(() => {
     document.title = "Inicio / Twitter X";
   }, []);
 
   useEffect(() => {
-    if (loggedInUserData) {
-      getPostsFromHome(loggedInUserId)
-        .then((data) => setPostsFromHome(data))
-        .then(() => setPostsFromHomeLoading(false));
+    if (authUserId) {
+      getHomePosts(authUserId)
+        .then((data) => setHomePosts(data))
+        .catch((error) => console.error(error))
+        .finally(() => setHomePostsLoading(false));
     }
-  }, [loggedInUserData]);
+  }, [authUser?.following]);
 
   return (
     <div className="w-full h-full">
       <Header title="Inicio" />
-
-      {loggedInUserId ? (
-        <PostForm />
+      {authUserId ? (
+        <PostForm view="post" />
       ) : (
         <>
           <h1 className="pt-8 px-8 mb-4 text-[1.75rem] font-bold text-center border-t border-t-[#2f3336]">
@@ -46,23 +39,22 @@ function Home() {
           <div className="flex justify-center items-center gap-4 px-4 pb-8 border-b border-b-[#2f3336]">
             <button
               className="p-3 font-medium rounded-full bg-[#1d9bf0] transition hover:opacity-90"
-              onClick={() => setLoginModalOpen(true)}
+              onClick={() => setOpenModal("login")}
             >
               Iniciar sesión
             </button>
             <button
               className="p-3 font-medium rounded-full text-black bg-white transition hover:opacity-90"
-              onClick={() => setRegisterModalOpen(true)}
+              onClick={() => setOpenModal("sign up")}
             >
               Registrarse
             </button>
           </div>
         </>
       )}
-
-      {loggedInUserId && (
-        <Posts postsLoading={postsFromHomeLoading} posts={postsFromHome} />
-      )}
+      {authUserId ? (
+        <Posts postsLoading={homePostsLoading} posts={homePosts} />
+      ) : null}
     </div>
   );
 }

@@ -1,32 +1,47 @@
-import { FormEvent, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAppContext } from "core/context/AppContext";
+import { Dispatch, FormEvent, SetStateAction, useState } from "react";
+import { useDispatch } from "react-redux";
+import { useModalContext } from "core/context/ModalContext";
+import { setAuthUserId, setToken } from "core/store/usersSlice";
 import { login } from "../api/auth.api";
 import Modal from "core/components/Modal";
 import UserForm from "core/components/UserForm";
 import Input from "core/components/Input";
+import { parseJwt } from "core/utils/parseJwt";
 
-function LoginModal() {
-  const navigate = useNavigate();
+interface Props {
+  setAppLoading: Dispatch<SetStateAction<boolean>>;
+}
 
-  const { setOpenModal } = useAppContext();
+function LoginModal({ setAppLoading }: Props) {
+  const dispatch = useDispatch();
+
+  const { setOpenModal, closeModal } = useModalContext();
 
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loginError, setLoginError] = useState(false);
+  const [loggingIn, setLoggingIn] = useState(false);
 
   const handleLogin = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setLoggingIn(true);
+
     login(username, password)
-      .then(() => navigate(0))
+      .then((data) => {
+        setAppLoading(true);
+        dispatch(setToken(data.token));
+        dispatch(setAuthUserId(parseJwt(data.token).user_id));
+        closeModal();
+      })
       .catch((error) => {
         console.error(error);
         setLoginError(true);
+        setLoggingIn(false);
       });
   };
 
   return (
-    <Modal title="Inicia sesión">
+    <Modal title="Inicia sesión" loading={loggingIn}>
       <UserForm
         onSubmit={handleLogin}
         button={{

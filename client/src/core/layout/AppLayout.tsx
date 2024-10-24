@@ -1,9 +1,10 @@
 import { ReactNode, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAppContext } from "core/context/AppContext";
-import { authUserId, token } from "../utils/localStorage";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "core/store/store";
+import { useModalContext } from "core/context/ModalContext";
 import { parseJwt } from "../utils/parseJwt";
 import { getAuthUser } from "modules/users/api/users.api";
+import { logout, setAuthUser } from "core/store/usersSlice";
 import LoadingTwitterX from "core/components/LoadingTwitterX";
 import LoginModal from "modules/auth/components/LoginModal";
 import SignUpModal from "modules/auth/components/SignUpModal";
@@ -12,11 +13,13 @@ import Sidebar from "./Sidebar/Sidebar";
 import RecommendedUsers from "./RecommendedUsers";
 
 function AppLayout({ children }: { children: ReactNode }) {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const { authUser, setAuthUser, openModal } = useAppContext();
+  const { authUserId, token } = useSelector((state: RootState) => state.users);
 
-  const [appLoading, setAppLoading] = useState(true);
+  const { openModal } = useModalContext();
+
+  const [appLoading, setAppLoading] = useState(!!(authUserId && token));
 
   useEffect(() => {
     if (authUserId && token) {
@@ -25,11 +28,11 @@ function AppLayout({ children }: { children: ReactNode }) {
         parseJwt(token).exp * 1000 - new Date().getTime();
 
       getAuthUser(authUserId)
-        .then((data) => setAuthUser(data))
+        .then((data) => dispatch(setAuthUser(data)))
         .then(
           () =>
             (timeout = window.setTimeout(() => {
-              navigate(0);
+              dispatch(logout());
             }, tokenExpirationTime))
         )
         .catch((error) => console.error(error))
@@ -40,16 +43,8 @@ function AppLayout({ children }: { children: ReactNode }) {
           clearTimeout(timeout);
         }
       };
-    } else {
-      setAppLoading(false);
     }
-  }, []);
-
-  useEffect(() => {
-    if (authUser) {
-      setAppLoading(false);
-    }
-  }, [authUser]);
+  }, [authUserId, token]);
 
   return appLoading ? (
     <LoadingTwitterX />
@@ -57,7 +52,7 @@ function AppLayout({ children }: { children: ReactNode }) {
     <>
       {!authUserId &&
         (openModal === "login" ? (
-          <LoginModal />
+          <LoginModal setAppLoading={setAppLoading} />
         ) : openModal === "sign up" ? (
           <SignUpModal />
         ) : null)}

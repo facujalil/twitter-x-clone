@@ -7,19 +7,19 @@ import {
   useState,
 } from "react";
 import { IPost } from "../types/postTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "core/store/store";
 import { Link } from "react-router-dom";
-import { useAppContext } from "core/context/AppContext";
-import { authUserId } from "core/utils/localStorage";
-import { createPost, commentPost, getPostDetail } from "../api/posts.api";
-import { getAuthUser } from "modules/users/api/users.api";
+import { useModalContext } from "core/context/ModalContext";
+import { createPost, commentPost } from "../api/posts.api";
+import { addComment, addPost, incrementComments } from "core/store/postsSlice";
 import Avatar from "core/components/Avatar";
 
 interface Props {
   view?: "modal" | "comment" | "post";
   focusTextarea?: boolean;
   setFocusTextarea?: Dispatch<SetStateAction<boolean>>;
-  postDetail?: IPost | null;
-  setPostDetail?: Dispatch<SetStateAction<IPost | null>>;
+  postDetail?: IPost;
   postId?: number;
   postDetailLoading?: boolean;
   autoFocus?: boolean;
@@ -30,12 +30,17 @@ function PostForm({
   focusTextarea,
   setFocusTextarea,
   postDetail,
-  setPostDetail,
   postId,
   postDetailLoading,
   autoFocus,
 }: Props) {
-  const { authUser, setAuthUser, closeModal } = useAppContext();
+  const dispatch = useDispatch();
+
+  const { authUserId, authUser, userProfile } = useSelector(
+    (state: RootState) => state.users
+  );
+
+  const { closeModal } = useModalContext();
 
   const [textarea, setTextarea] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -54,19 +59,49 @@ function PostForm({
 
   const handlePost = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (textarea === "" || !authUserId) {
+    if (textarea === "" || !authUserId || !authUser) {
       return;
     }
 
     if (view === "comment" && postDetail && postId) {
       commentPost(authUserId, postDetail.from_user_id, postId, textarea)
-        .then(() => getPostDetail(postId))
-        .then((data) => setPostDetail && setPostDetail(data))
+        .then((data) =>
+          dispatch(
+            addComment({
+              comment_id: data.comment_id,
+              from_user_id: authUserId,
+              avatar: authUser.avatar,
+              display_name: authUser.display_name,
+              username: authUser.username,
+              comment_text: textarea,
+              comment_creation_date: new Date().toISOString(),
+              comment_elapsed_time: 0,
+            })
+          )
+        )
+        .then(() => dispatch(incrementComments()))
         .catch((error) => console.error(error));
     } else {
       createPost(authUserId, textarea)
-        .then(() => getAuthUser(authUserId!))
-        .then((data) => setAuthUser(data))
+        .then((data) =>
+          dispatch(
+            addPost({
+              post: {
+                post_id: data.post_id,
+                from_user_id: authUserId,
+                avatar: authUser.avatar,
+                display_name: authUser.display_name,
+                username: authUser.username,
+                post_text: textarea,
+                post_creation_date: new Date().toISOString(),
+                post_elapsed_time: 0,
+                total_likes: 0,
+                total_comments: 0,
+              },
+              userProfileId: userProfile?.user_id,
+            })
+          )
+        )
         .catch((error) => console.error(error))
         .finally(() => (view === "modal" ? closeModal() : null));
     }

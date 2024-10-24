@@ -1,6 +1,5 @@
-import { token } from "core/utils/localStorage";
-
 export const getHomePosts = async (userId: number) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     `https://twitter-x-clone-production.up.railway.app/api/posts/home-posts/${userId}`,
     {
@@ -47,6 +46,7 @@ export const getPostDetail = async (postId: number) => {
 };
 
 export const createPost = async (userId: number, postText: string) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     "https://twitter-x-clone-production.up.railway.app/api/posts/create-post",
     {
@@ -95,6 +95,7 @@ export const commentPost = async (
   postId: number,
   commentText: string
 ) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     "https://twitter-x-clone-production.up.railway.app/api/posts/comment-post",
     {
@@ -125,6 +126,7 @@ export const likePost = async (
   toUserId: number,
   postId: number
 ) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     "https://twitter-x-clone-production.up.railway.app/api/posts/like-post",
     {
@@ -150,6 +152,7 @@ export const likePost = async (
 };
 
 export const unlikePost = async (userId: number, postId: number) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     "https://twitter-x-clone-production.up.railway.app/api/posts/unlike-post",
     {

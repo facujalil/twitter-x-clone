@@ -86,7 +86,7 @@ function Post({ post, comment, view, setFocusTextarea }: Props) {
         {post && view !== "comment" ? (
           <div className="flex items-center gap-8">
             <CommentButton post={post} setFocusTextarea={setFocusTextarea} />
-            <ToggleLikeButton post={post} />
+            <ToggleLikeButton post={post} view={view} />
           </div>
         ) : null}
       </div>

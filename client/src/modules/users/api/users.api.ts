@@ -1,6 +1,5 @@
-import { token } from "core/utils/localStorage";
-
 export const editProfile = async (userId: number, formData: FormData) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     `https://twitter-x-clone-production.up.railway.app/api/users/edit-profile/${userId}`,
     {
@@ -18,6 +17,7 @@ export const editProfile = async (userId: number, formData: FormData) => {
 };
 
 export const getAuthUser = async (userId: number) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     `https://twitter-x-clone-production.up.railway.app/api/users/auth-user/${userId}`,
     {
@@ -66,6 +66,7 @@ export const getRecommendedUsers = async (userId: number | null) => {
 };
 
 export const getNotifications = async (userId: number) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     `https://twitter-x-clone-production.up.railway.app/api/users/notifications/${userId}`,
     {
@@ -86,6 +87,7 @@ export const getNotifications = async (userId: number) => {
 };
 
 export const markNotificationsAsRead = async (userId: number) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     `https://twitter-x-clone-production.up.railway.app/api/users/mark-notifications-as-read/${userId}`,
     {
@@ -103,6 +105,7 @@ export const markNotificationsAsRead = async (userId: number) => {
 };
 
 export const followUser = async (followerId: number, followingId: number) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     "https://twitter-x-clone-production.up.railway.app/api/users/follow-user",
     {
@@ -127,6 +130,7 @@ export const followUser = async (followerId: number, followingId: number) => {
 };
 
 export const unfollowUser = async (followerId: number, followingId: number) => {
+  const token = localStorage.getItem("token");
   const res = await fetch(
     "https://twitter-x-clone-production.up.railway.app/api/users/unfollow-user",
     {

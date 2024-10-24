@@ -1,9 +1,12 @@
 import { useState } from "react";
 import { IUserProfile, TImageUpload } from "modules/users/types/userTypes";
 import { useForm } from "react-hook-form";
-import { useAppContext } from "core/context/AppContext";
-import { authUserId } from "core/utils/localStorage";
-import { editProfile, getAuthUser } from "modules/users/api/users.api";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "core/store/store";
+import { useModalContext } from "core/context/ModalContext";
+import { editProfile } from "modules/users/api/users.api";
+import { setAuthUser, setUserProfile } from "core/store/usersSlice";
+import { setPosts } from "core/store/postsSlice";
 import Modal from "core/components/Modal";
 import UserForm from "core/components/UserForm";
 import ImageUpload from "./ImageUpload";
@@ -21,7 +24,14 @@ function EditProfileModal({ userProfile }: Props) {
     formState: { errors },
   } = useForm();
 
-  const { setAuthUser, closeModal } = useAppContext();
+  const dispatch = useDispatch();
+
+  const { authUser, authUserId } = useSelector(
+    (state: RootState) => state.users
+  );
+  const posts = useSelector((state: RootState) => state.posts.posts);
+
+  const { closeModal } = useModalContext();
 
   const [cover, setCover] = useState<TImageUpload>({
     preview: userProfile.cover,
@@ -34,8 +44,10 @@ function EditProfileModal({ userProfile }: Props) {
   const [displayName, setDisplayName] = useState(userProfile.display_name);
   const [username, setUsername] = useState(userProfile.username);
   const [biography, setBiography] = useState(userProfile.biography || "");
+  const [saving, setSaving] = useState(false);
 
   const handleEditProfile = async () => {
+    setSaving(true);
     const form = new FormData();
     if (cover.data) {
       form.append("previousCoverFile", userProfile.cover);
@@ -52,11 +64,39 @@ function EditProfileModal({ userProfile }: Props) {
     if (authUserId) {
       editProfile(authUserId, form)
         .then(() => {
-          getAuthUser(authUserId!).then((data) => setAuthUser(data));
+          dispatch(
+            setUserProfile({
+              ...userProfile,
+              cover: cover.preview,
+              avatar: avatar.preview,
+              display_name: displayName,
+              username: username,
+              biography: biography,
+            })
+          );
+          dispatch(
+            setAuthUser({
+              ...authUser!,
+              avatar: avatar.preview,
+              display_name: displayName,
+              username: username,
+            })
+          );
+          dispatch(
+            setPosts(
+              posts.map((post) => ({
+                ...post,
+                avatar: avatar.preview,
+                display_name: displayName,
+                username: username,
+              }))
+            )
+          );
           closeModal();
         })
         .catch((error) => {
           console.error(error);
+          setSaving(false);
           if (error.message === "Username already exists.") {
             setError("username", {
               message: "Este nombre de usuario ya está en uso",
@@ -67,7 +107,7 @@ function EditProfileModal({ userProfile }: Props) {
   };
 
   return (
-    <Modal title="Editar perfil">
+    <Modal title="Editar perfil" loading={saving}>
       <UserForm
         onSubmit={handleSubmit(handleEditProfile)}
         button={{

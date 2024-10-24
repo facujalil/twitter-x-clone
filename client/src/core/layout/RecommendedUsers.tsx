@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { useAppContext } from "core/context/AppContext";
+import { useSelector } from "react-redux";
+import { RootState } from "core/store/store";
 import { IRecommendedUser } from "modules/users/types/userTypes";
-import { authUserId } from "../utils/localStorage";
 import { getRecommendedUsers } from "modules/users/api/users.api";
 import LoadingSpinner from "core/components/LoadingSpinner";
 import Avatar from "core/components/Avatar";
@@ -13,7 +13,9 @@ import ToggleFollowButton from "modules/users/components/ToggleFollowButton";
 function RecommendedUsers() {
   const navigate = useNavigate();
 
-  const { authUser } = useAppContext();
+  const { authUserId, authUser } = useSelector(
+    (state: RootState) => state.users
+  );
 
   const [recommendedUsers, setRecommendedUsers] = useState<IRecommendedUser[]>(
     []
@@ -24,6 +26,7 @@ function RecommendedUsers() {
     if (!recommendedUsersLoading) {
       setRecommendedUsersLoading(true);
     }
+
     getRecommendedUsers(authUserId)
       .then((data) => setRecommendedUsers(data))
       .catch((error) => console.error(error))

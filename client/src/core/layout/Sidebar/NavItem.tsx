@@ -1,7 +1,8 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useAppContext } from "core/context/AppContext";
-import { authUserId } from "core/utils/localStorage";
+import { useSelector } from "react-redux";
+import { RootState } from "core/store/store";
+import { useModalContext } from "core/context/ModalContext";
 
 interface Props {
   privateRoute?: boolean;
@@ -12,11 +13,13 @@ interface Props {
 function NavItem({ privateRoute, to, children }: Props) {
   const location = useLocation();
 
-  const { setOpenModal } = useAppContext();
+  const authUserId = useSelector((state: RootState) => state.users.authUserId);
+
+  const { setOpenModal } = useModalContext();
 
   return privateRoute && !authUserId ? (
     <button
-      className="xl:aspect-square xl:p-4 xl:rounded-full inline-flex items-center gap-4 py-3 px-4 bg-transparent text-nowrap rounded-full transition hover:bg-[#181818]"
+      className="xl:aspect-square xl:p-4 xl:rounded-full inline-flex items-center gap-4 py-3 px-4 text-nowrap rounded-full transition hover:bg-[#181818]"
       onClick={() => setOpenModal("login")}
     >
       {children}
@@ -26,7 +29,7 @@ function NavItem({ privateRoute, to, children }: Props) {
       to={to}
       className={`${
         location.pathname === to ? "font-medium" : ""
-      } xl:aspect-square xl:p-4 xl:rounded-full inline-flex items-center gap-4 py-3 px-4 bg-transparent text-nowrap rounded-full transition hover:bg-[#181818]`}
+      } xl:aspect-square xl:p-4 xl:rounded-full inline-flex items-center gap-4 py-3 px-4 text-nowrap rounded-full transition hover:bg-[#181818]`}
     >
       {children}
     </Link>

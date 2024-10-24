@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAppContext } from "core/context/AppContext";
+import { useModalContext } from "core/context/ModalContext";
 import { signUp } from "../api/auth.api";
 import Modal from "core/components/Modal";
 import UserForm from "core/components/UserForm";
@@ -14,18 +14,22 @@ function SignUpModal() {
     formState: { errors },
   } = useForm();
 
-  const { setOpenModal } = useAppContext();
+  const { setOpenModal } = useModalContext();
 
   const [email, setEmail] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [signingUp, setSigningUp] = useState(false);
 
   const handleSignUp = () => {
+    setSigningUp(true);
+
     signUp(email, displayName, username, password)
       .then(() => setOpenModal("login"))
       .catch((error) => {
         console.error(error);
+        setSigningUp(false);
         if (error.message === "Email is already used.") {
           setError("email", {
             message: "Ese correo electrónico ya está siendo utilizado",
@@ -39,7 +43,7 @@ function SignUpModal() {
   };
 
   return (
-    <Modal title="Crea tu cuenta">
+    <Modal title="Crea tu cuenta" loading={signingUp}>
       <UserForm
         onSubmit={handleSubmit(handleSignUp)}
         button={{

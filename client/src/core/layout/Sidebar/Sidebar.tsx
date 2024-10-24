@@ -1,22 +1,23 @@
-import { Link, useNavigate } from "react-router-dom";
-import { useAppContext } from "core/context/AppContext";
-import { authUserId } from "core/utils/localStorage";
+import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "core/store/store";
+import { useModalContext } from "core/context/ModalContext";
 import { FaXTwitter } from "react-icons/fa6";
 import NavItem from "./NavItem";
 import { AiFillHome } from "react-icons/ai";
 import { BsBellFill } from "react-icons/bs";
 import { BiLogOut, BiSolidUser } from "react-icons/bi";
 import { FaFeatherAlt } from "react-icons/fa";
+import { logout } from "core/store/usersSlice";
 
 function Sidebar() {
-  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const { authUser, setOpenModal } = useAppContext();
+  const { authUserId, authUser } = useSelector(
+    (state: RootState) => state.users
+  );
 
-  const logout = () => {
-    localStorage.removeItem("token");
-    navigate(0);
-  };
+  const { setOpenModal } = useModalContext();
 
   return (
     <div className="xl:px-2 flex flex-col items-start gap-[1.15rem] mt-4">
@@ -60,9 +61,9 @@ function Sidebar() {
           {authUserId ? (
             <li className="xl:w-auto w-56">
               <button
-                className="xl:aspect-square xl:p-4 xl:rounded-full inline-flex items-center gap-4 py-3 px-4 bg-transparent text-nowrap rounded-full transition hover:bg-[#181818]"
+                className="xl:aspect-square xl:p-4 xl:rounded-full inline-flex items-center gap-4 py-3 px-4 text-nowrap rounded-full transition hover:bg-[#181818]"
                 onClick={() => {
-                  logout();
+                  dispatch(logout());
                   localStorage.removeItem("token");
                 }}
               >

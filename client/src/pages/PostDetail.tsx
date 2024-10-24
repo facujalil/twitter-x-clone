@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { authUserId } from "core/utils/localStorage";
-import { IPost, IPostComment } from "modules/posts/types/postTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "core/store/store";
 import { getPostDetail, getPostComments } from "modules/posts/api/posts.api";
+import { setPostComments, setPostDetail } from "core/store/postsSlice";
 import Header from "core/components/Header";
 import LoadingSpinner from "core/components/LoadingSpinner";
 import Post from "modules/posts/components/Post/Post";
@@ -12,40 +13,40 @@ function PostDetail() {
   const { postId } = useParams();
   const id = Number(postId);
 
+  const dispatch = useDispatch();
+
+  const postDetail = useSelector((state: RootState) => state.posts.postDetail);
+  const postComments = useSelector(
+    (state: RootState) => state.posts.postComments
+  );
+  const authUserId = useSelector((state: RootState) => state.users.authUserId);
+
   const [searchParams] = useSearchParams();
   const autoFocus = authUserId
     ? searchParams.get("autoFocus") === "true"
     : false;
 
-  const [postDetail, setPostDetail] = useState<IPost | null>(null);
-  const [postComments, setPostComments] = useState<IPostComment[]>([]);
   const [postDetailLoading, setPostDetailLoading] = useState(true);
   const [postCommentsLoading, setPostCommentsLoading] = useState(true);
   const [focusTextarea, setFocusTextarea] = useState(false);
 
   useEffect(() => {
     getPostDetail(id)
-      .then((data) => setPostDetail(data))
+      .then((data) => dispatch(setPostDetail(data)))
       .catch((error) => console.error(error))
-      .finally(() => setPostDetailLoading(false));
+      .finally(() => setPostDetailLoading(false))
+      .then(() =>
+        getPostComments(id)
+          .then((data) => dispatch(setPostComments(data)))
+          .catch((error) => console.error(error))
+          .finally(() => setPostCommentsLoading(false))
+      );
 
     return () => {
-      setPostDetail(null);
+      dispatch(setPostDetail(null));
+      dispatch(setPostComments([]));
     };
   }, []);
-
-  useEffect(() => {
-    if (postDetail) {
-      getPostComments(id)
-        .then((data) => setPostComments(data))
-        .catch((error) => console.error(error))
-        .finally(() => setPostCommentsLoading(false));
-
-      return () => {
-        setPostComments([]);
-      };
-    }
-  }, [postDetail]);
 
   useEffect(() => {
     if (postDetail) {
@@ -73,7 +74,6 @@ function PostDetail() {
             view="comment"
             postId={id}
             postDetail={postDetail}
-            setPostDetail={setPostDetail}
             postDetailLoading={postDetailLoading}
             autoFocus={autoFocus}
             focusTextarea={focusTextarea}

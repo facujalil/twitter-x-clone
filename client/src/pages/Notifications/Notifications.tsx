@@ -1,18 +1,22 @@
 import { useEffect, useState } from "react";
-import { useAppContext } from "core/context/AppContext";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "core/store/store";
 import { INotification } from "modules/users/types/userTypes";
-import { authUserId } from "core/utils/localStorage";
 import {
   getNotifications,
-  getAuthUser,
   markNotificationsAsRead,
 } from "modules/users/api/users.api";
+import { resetUnreadNotifications } from "core/store/usersSlice";
 import Header from "core/components/Header";
 import LoadingSpinner from "core/components/LoadingSpinner";
 import Notification from "./Notification";
 
 function Notifications() {
-  const { authUser, setAuthUser } = useAppContext();
+  const dispatch = useDispatch();
+
+  const { authUserId, authUser } = useSelector(
+    (state: RootState) => state.users
+  );
 
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(true);
@@ -23,13 +27,13 @@ function Notifications() {
         .then((data) => setNotifications(data))
         .catch((error) => console.error(error))
         .finally(() => setNotificationsLoading(false));
-  }, []);
+  }, [authUserId]);
 
   useEffect(() => {
     document.title = "Notificaciones / Twitter X";
     if (authUserId && authUser && authUser.unread_notifications > 0) {
       markNotificationsAsRead(authUserId)
-        .then(() => getAuthUser(authUserId!).then((data) => setAuthUser(data)))
+        .then(() => dispatch(resetUnreadNotifications()))
         .catch((error) => console.error(error));
     }
   }, []);

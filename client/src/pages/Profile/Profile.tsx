@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { useAppContext } from "core/context/AppContext";
-import { IUserProfile } from "modules/users/types/userTypes";
-import { IPost } from "modules/posts/types/postTypes";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "core/store/store";
+import { useModalContext } from "core/context/ModalContext";
 import { getUserProfile } from "modules/users/api/users.api";
 import { getProfilePosts } from "modules/posts/api/posts.api";
-import { authUserId } from "core/utils/localStorage";
+import { setUserProfile } from "core/store/usersSlice";
+import { setPosts } from "core/store/postsSlice";
 import { checkUserFollowsYou } from "modules/users/utils/checkUserFollowsYou";
 import LoadingSpinner from "core/components/LoadingSpinner";
 import EditProfileModal from "./EditProfileModal/EditProfileModal";
@@ -20,16 +21,21 @@ function Profile() {
   const { userId } = useParams();
   const id = Number(userId);
 
-  const { authUser, openModal, setOpenModal } = useAppContext();
+  const dispatch = useDispatch();
 
-  const [userProfile, setUserProfile] = useState<IUserProfile | null>(null);
-  const [profilePosts, setProfilePosts] = useState<IPost[]>([]);
+  const { authUserId, authUser, userProfile } = useSelector(
+    (state: RootState) => state.users
+  );
+  const posts = useSelector((state: RootState) => state.posts.posts);
+
+  const { openModal, setOpenModal } = useModalContext();
+
   const [userProfileLoading, setUserProfileLoading] = useState(true);
   const [profilePostsLoading, setProfilePostsLoading] = useState(true);
 
   useEffect(() => {
     return () => {
-      setUserProfile(null);
+      dispatch(setUserProfile(null));
     };
   }, []);
 
@@ -40,19 +46,17 @@ function Profile() {
     if (!profilePostsLoading) {
       setProfilePostsLoading(true);
     }
-  }, [id]);
 
-  useEffect(() => {
     getUserProfile(id)
-      .then((data) => setUserProfile(data))
+      .then((data) => dispatch(setUserProfile(data)))
       .catch((error) => console.error(error))
       .finally(() => setUserProfileLoading(false));
 
     getProfilePosts(id)
-      .then((data) => setProfilePosts(data))
+      .then((data) => dispatch(setPosts(data)))
       .catch((error) => console.error(error))
       .finally(() => setProfilePostsLoading(false));
-  }, [id, authUser]);
+  }, [id]);
 
   useEffect(() => {
     if (userProfile) {
@@ -100,7 +104,7 @@ function Profile() {
                   />
                   {authUserId === userProfile.user_id ? (
                     <button
-                      className="py-2 px-6 text-[0.9rem] font-medium bg-transparent border border-[#ffffff50] rounded-full transition hover:bg-[#181919]"
+                      className="py-2 px-6 text-[0.9rem] font-medium border border-[#ffffff50] rounded-full transition hover:bg-[#181919]"
                       onClick={() => setOpenModal("edit profile")}
                     >
                       Editar perfil
@@ -160,7 +164,7 @@ function Profile() {
                   </div>
                 </div>
               </div>
-              <Posts postsLoading={profilePostsLoading} posts={profilePosts} />
+              <Posts postsLoading={profilePostsLoading} posts={posts} />
             </>
           ) : (
             <p className="pt-4 text-center">Esta cuenta no existe</p>

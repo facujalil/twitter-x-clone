@@ -1,16 +1,23 @@
 import { useEffect, useState } from "react";
-import { useAppContext } from "core/context/AppContext";
-import { IPost } from "modules/posts/types/postTypes";
-import { authUserId } from "core/utils/localStorage";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState } from "core/store/store";
+import { useModalContext } from "core/context/ModalContext";
 import { getHomePosts } from "modules/posts/api/posts.api";
+import { setPosts } from "core/store/postsSlice";
 import Header from "core/components/Header";
 import PostForm from "modules/posts/components/PostForm";
 import Posts from "modules/posts/components/Posts";
 
 function Home() {
-  const { authUser, setOpenModal } = useAppContext();
+  const dispatch = useDispatch();
 
-  const [homePosts, setHomePosts] = useState<IPost[]>([]);
+  const { authUserId, authUser } = useSelector(
+    (state: RootState) => state.users
+  );
+  const posts = useSelector((state: RootState) => state.posts.posts);
+
+  const { setOpenModal } = useModalContext();
+
   const [homePostsLoading, setHomePostsLoading] = useState(true);
 
   useEffect(() => {
@@ -20,11 +27,11 @@ function Home() {
   useEffect(() => {
     if (authUserId) {
       getHomePosts(authUserId)
-        .then((data) => setHomePosts(data))
+        .then((data) => dispatch(setPosts(data)))
         .catch((error) => console.error(error))
         .finally(() => setHomePostsLoading(false));
     }
-  }, [authUser?.following]);
+  }, [authUserId, authUser?.following]);
 
   return (
     <div className="w-full h-full">
@@ -53,7 +60,7 @@ function Home() {
         </>
       )}
       {authUserId ? (
-        <Posts postsLoading={homePostsLoading} posts={homePosts} />
+        <Posts postsLoading={homePostsLoading} posts={posts} />
       ) : null}
     </div>
   );

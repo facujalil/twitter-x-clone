@@ -1,8 +1,9 @@
 import { Dispatch, SetStateAction } from "react";
 import { IPost } from "modules/posts/types/postTypes";
 import { useNavigate } from "react-router-dom";
-import { useAppContext } from "core/context/AppContext";
-import { authUserId } from "core/utils/localStorage";
+import { useSelector } from "react-redux";
+import { RootState } from "core/store/store";
+import { useModalContext } from "core/context/ModalContext";
 import { AiOutlineMessage } from "react-icons/ai";
 
 interface Props {
@@ -13,16 +14,17 @@ interface Props {
 function CommentButton({ post, setFocusTextarea }: Props) {
   const navigate = useNavigate();
 
-  const { setOpenModal } = useAppContext();
+  const { authUserId } = useSelector((state: RootState) => state.users);
+
+  const { setOpenModal } = useModalContext();
 
   return (
     <button
-      className="flex justify-center items-center gap-[0.4rem] text-[0.95rem] font-medium text-[#71767b] bg-transparent transition hover:text-[#0ea5e9]"
+      className="flex justify-center items-center gap-[0.4rem] text-[0.95rem] font-medium text-[#71767b] transition hover:text-[#0ea5e9]"
       onClick={(e) => {
         e.stopPropagation();
         if (authUserId) {
           navigate(`/posts/${post.post_id}?autoFocus=true`);
-
           if (setFocusTextarea) {
             setFocusTextarea(true);
           }

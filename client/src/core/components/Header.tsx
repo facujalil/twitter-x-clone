@@ -17,7 +17,7 @@ function Header({ title, showBackButton }: Props) {
     >
       {showBackButton ? (
         <button
-          className="h-8 w-8 flex justify-center items-center text-xl bg-transparent rounded-full transition hover:bg-[#181818]"
+          className="h-8 w-8 flex justify-center items-center text-xl rounded-full transition hover:bg-[#181818]"
           onClick={() => navigate(-1)}
         >
           <IoArrowBack />

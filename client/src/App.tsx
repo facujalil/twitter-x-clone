@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import { authUserId } from "core/utils/localStorage";
+import { useSelector } from "react-redux";
+import { RootState } from "core/store/store";
 import AppLayout from "core/layout/AppLayout";
 import Home from "pages/Home";
 import PostDetail from "pages/PostDetail";
@@ -7,6 +8,8 @@ import Profile from "pages/Profile/Profile";
 import Notifications from "pages/Notifications/Notifications";
 
 function App() {
+  const authUserId = useSelector((state: RootState) => state.users.authUserId);
+
   return (
     <div className="md:gap-0 md:max-w-[100%] flex justify-center items-start gap-8 max-w-[90%] h-full min-h-screen m-auto">
       <AppLayout>

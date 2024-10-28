@@ -13,7 +13,7 @@ function Notification({ notification }: Props) {
           ? `/users/${notification.from_user_id}`
           : `/posts/${notification.post_id}`
       }
-      className="flex justify-center w-full p-6 border-b border-[#2f3336] transition cursor-pointer hover:bg-[#080808]"
+      className="flex justify-center w-full p-6 text-center border-b border-[#2f3336] transition hover:bg-[#080808]"
     >
       {notification.type === "follow"
         ? `El usuario @${notification.from_username} te siguió`

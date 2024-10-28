@@ -17,7 +17,7 @@ interface IModalContext {
 
 export const ModalContext = createContext<IModalContext | undefined>(undefined);
 
-export const ModalProvider = ({ children }: { children: ReactNode }) => {
+function ModalProvider({ children }: { children: ReactNode }) {
   const [openModal, setOpenModal] = useState<TOpenModal | null>(null);
 
   const closeModal = () => {
@@ -34,12 +34,14 @@ export const ModalProvider = ({ children }: { children: ReactNode }) => {
   return (
     <ModalContext.Provider value={value}>{children}</ModalContext.Provider>
   );
-};
+}
+
+export default ModalProvider;
 
 export const useModalContext = () => {
   const context = useContext(ModalContext);
   if (context === undefined) {
-    throw new Error("useModalContext must be used within a ModalProvider");
+    throw new Error("useModalContext must be used within a ModalProvider.");
   }
 
   return context;

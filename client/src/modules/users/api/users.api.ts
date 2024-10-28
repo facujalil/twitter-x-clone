@@ -50,7 +50,7 @@ export const getUserProfile = async (userId: number) => {
   return data;
 };
 
-export const getRecommendedUsers = async (userId: number | null) => {
+export const getRecommendedUsers = async (userId?: number) => {
   const res = await fetch(
     `https://twitter-x-clone-production.up.railway.app/api/users/recommended-users/${
       userId || 0

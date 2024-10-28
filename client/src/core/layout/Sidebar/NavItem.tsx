@@ -13,11 +13,11 @@ interface Props {
 function NavItem({ privateRoute, to, children }: Props) {
   const location = useLocation();
 
-  const authUserId = useSelector((state: RootState) => state.users.authUserId);
+  const authUser = useSelector((state: RootState) => state.users.authUser);
 
   const { setOpenModal } = useModalContext();
 
-  return privateRoute && !authUserId ? (
+  return privateRoute && !authUser ? (
     <button
       className="xl:aspect-square xl:p-4 xl:rounded-full inline-flex items-center gap-4 py-3 px-4 text-nowrap rounded-full transition hover:bg-[#181818]"
       onClick={() => setOpenModal("login")}

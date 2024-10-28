@@ -36,7 +36,7 @@ function PostForm({
 }: Props) {
   const dispatch = useDispatch();
 
-  const { authUserId, authUser, userProfile } = useSelector(
+  const { authUser, userProfile } = useSelector(
     (state: RootState) => state.users
   );
 
@@ -59,17 +59,17 @@ function PostForm({
 
   const handlePost = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (textarea === "" || !authUserId || !authUser) {
+    if (textarea === "" || !authUser) {
       return;
     }
 
     if (view === "comment" && postDetail && postId) {
-      commentPost(authUserId, postDetail.from_user_id, postId, textarea)
+      commentPost(authUser.user_id, postDetail.from_user_id, postId, textarea)
         .then((data) =>
           dispatch(
             addComment({
               comment_id: data.comment_id,
-              from_user_id: authUserId,
+              from_user_id: authUser.user_id,
               avatar: authUser.avatar,
               display_name: authUser.display_name,
               username: authUser.username,
@@ -82,13 +82,13 @@ function PostForm({
         .then(() => dispatch(incrementComments()))
         .catch((error) => console.error(error));
     } else {
-      createPost(authUserId, textarea)
+      createPost(authUser.user_id, textarea)
         .then((data) =>
           dispatch(
             addPost({
               post: {
                 post_id: data.post_id,
-                from_user_id: authUserId,
+                from_user_id: authUser.user_id,
                 avatar: authUser.avatar,
                 display_name: authUser.display_name,
                 username: authUser.username,
@@ -123,7 +123,7 @@ function PostForm({
       }`}
       onSubmit={handlePost}
     >
-      <div className="flex justify-between w-full">
+      <div className="flex justify-between items-start w-full">
         {view === "modal" ? (
           <Avatar
             src={authUser?.avatar}
@@ -131,7 +131,7 @@ function PostForm({
             extraClasses="w-[2.65rem] h-[2.65rem]"
           />
         ) : (
-          <Link to={`/users/${authUserId}`}>
+          <Link to={`/users/${authUser?.user_id}`}>
             <Avatar
               src={authUser?.avatar}
               size="small"

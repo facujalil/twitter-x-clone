@@ -15,17 +15,19 @@ import RecommendedUsers from "./RecommendedUsers";
 function AppLayout({ children }: { children: ReactNode }) {
   const dispatch = useDispatch();
 
-  const { authUserId, token } = useSelector((state: RootState) => state.users);
+  const { token, authUser } = useSelector((state: RootState) => state.users);
 
   const { openModal } = useModalContext();
 
-  const [appLoading, setAppLoading] = useState(!!(authUserId && token));
+  const [appLoading, setAppLoading] = useState(!!token);
 
   useEffect(() => {
-    if (authUserId && token) {
-      let timeout: number | undefined;
+    if (token) {
+      const authUserId = parseJwt(token).user_id;
       const tokenExpirationTime =
         parseJwt(token).exp * 1000 - new Date().getTime();
+
+      let timeout: number | undefined;
 
       getAuthUser(authUserId)
         .then((data) => dispatch(setAuthUser(data)))
@@ -44,13 +46,13 @@ function AppLayout({ children }: { children: ReactNode }) {
         }
       };
     }
-  }, [authUserId, token]);
+  }, [token]);
 
   return appLoading ? (
     <LoadingTwitterX />
   ) : (
     <>
-      {!authUserId &&
+      {!authUser &&
         (openModal === "login" ? (
           <LoginModal setAppLoading={setAppLoading} />
         ) : openModal === "sign up" ? (

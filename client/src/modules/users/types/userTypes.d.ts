@@ -10,6 +10,7 @@ export interface IUser {
 }
 
 export interface IAuthUser extends IUser {
+  user_id: number;
   unread_notifications: number;
   following: {
     following_id: number;

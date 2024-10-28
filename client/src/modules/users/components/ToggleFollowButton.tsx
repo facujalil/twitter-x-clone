@@ -14,9 +14,7 @@ interface Props {
 function ToggleFollowButton({ user }: Props) {
   const dispatch = useDispatch();
 
-  const { authUserId, authUser } = useSelector(
-    (state: RootState) => state.users
-  );
+  const authUser = useSelector((state: RootState) => state.users.authUser);
 
   const { setOpenModal } = useModalContext();
 
@@ -64,14 +62,14 @@ function ToggleFollowButton({ user }: Props) {
       disabled={disabled}
       className={`py-2 text-[0.9rem] font-medium rounded-full cursor-pointer ${
         isFollowing
-          ? "overflow-hidden w-32 px-2 text-center text-nowrap text-ellipsis text-white  border border-white/50 hover:text-[#ff0000] hover:bg-[#ff000025] hover:border-[#ff0000] before:content-['Siguiendo'] hover:before:content-['Dejar_de_seguir']"
+          ? "overflow-hidden w-32 px-2 text-center text-nowrap text-ellipsis border border-white/50 hover:text-[#ff0000] hover:bg-[#ff000025] hover:border-[#ff0000] before:content-['Siguiendo'] hover:before:content-['Dejar_de_seguir']"
           : "px-6 text-black bg-white transition hover:opacity-90"
       }`}
       onClick={(e) => {
         e.stopPropagation();
-        !authUserId
+        !authUser
           ? setOpenModal("login")
-          : toggleFollow(isFollowing, authUserId, user.user_id);
+          : toggleFollow(isFollowing, authUser.user_id, user.user_id);
       }}
     >
       {!isFollowing ? "Seguir" : null}

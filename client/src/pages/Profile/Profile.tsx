@@ -12,7 +12,7 @@ import LoadingSpinner from "core/components/LoadingSpinner";
 import EditProfileModal from "./EditProfileModal/EditProfileModal";
 import Header from "core/components/Header";
 import Avatar from "core/components/Avatar";
-import HandleFollowButton from "modules/users/components/ToggleFollowButton";
+import ToggleFollowButton from "modules/users/components/ToggleFollowButton";
 import FollowsYouTag from "modules/users/components/FollowsYouTag";
 import { FaCalendarAlt } from "react-icons/fa";
 import Posts from "modules/posts/components/Posts";
@@ -23,7 +23,7 @@ function Profile() {
 
   const dispatch = useDispatch();
 
-  const { authUserId, authUser, userProfile } = useSelector(
+  const { authUser, userProfile } = useSelector(
     (state: RootState) => state.users
   );
   const posts = useSelector((state: RootState) => state.posts.posts);
@@ -95,14 +95,13 @@ function Profile() {
                   }
                   className="md:h-[10.5rem] relative w-full h-48 bg-[#3e4144]"
                 ></div>
-
                 <div className="z-20 flex justify-between items-center w-full px-4">
                   <Avatar
                     src={userProfile.avatar}
                     size="large"
                     extraClasses="md:mt-[-3.25rem] mt-[-4rem] border-4 border-black"
                   />
-                  {authUserId === userProfile.user_id ? (
+                  {authUser?.user_id === userProfile.user_id ? (
                     <button
                       className="py-2 px-6 text-[0.9rem] font-medium border border-[#ffffff50] rounded-full transition hover:bg-[#181919]"
                       onClick={() => setOpenModal("edit profile")}
@@ -110,7 +109,7 @@ function Profile() {
                       Editar perfil
                     </button>
                   ) : (
-                    <HandleFollowButton user={userProfile} />
+                    <ToggleFollowButton user={userProfile} />
                   )}
                 </div>
                 <div className="flex flex-col gap-[1.15rem] w-full p-4 border-b border-b-[#2f3336]">

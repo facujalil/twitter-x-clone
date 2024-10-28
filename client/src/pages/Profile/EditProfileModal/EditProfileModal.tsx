@@ -26,9 +26,7 @@ function EditProfileModal({ userProfile }: Props) {
 
   const dispatch = useDispatch();
 
-  const { authUser, authUserId } = useSelector(
-    (state: RootState) => state.users
-  );
+  const authUser = useSelector((state: RootState) => state.users.authUser);
   const posts = useSelector((state: RootState) => state.posts.posts);
 
   const { closeModal } = useModalContext();
@@ -61,8 +59,8 @@ function EditProfileModal({ userProfile }: Props) {
     form.append("previousUsername", userProfile.username);
     form.append("username", username);
     form.append("biography", biography);
-    if (authUserId) {
-      editProfile(authUserId, form)
+    if (authUser) {
+      editProfile(authUser.user_id, form)
         .then(() => {
           dispatch(
             setUserProfile({
@@ -76,7 +74,7 @@ function EditProfileModal({ userProfile }: Props) {
           );
           dispatch(
             setAuthUser({
-              ...authUser!,
+              ...authUser,
               avatar: avatar.preview,
               display_name: displayName,
               username: username,

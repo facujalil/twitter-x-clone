@@ -16,9 +16,7 @@ interface Props {
 function ToggleLikeButton({ post, view }: Props) {
   const dispatch = useDispatch();
 
-  const { authUserId, authUser } = useSelector(
-    (state: RootState) => state.users
-  );
+  const authUser = useSelector((state: RootState) => state.users.authUser);
 
   const { setOpenModal } = useModalContext();
 
@@ -67,9 +65,14 @@ function ToggleLikeButton({ post, view }: Props) {
       }`}
       onClick={(e) => {
         e.stopPropagation();
-        !authUserId
+        !authUser
           ? setOpenModal("login")
-          : toggleLike(isLiked, authUserId, post.from_user_id, post.post_id);
+          : toggleLike(
+              isLiked,
+              authUser.user_id,
+              post.from_user_id,
+              post.post_id
+            );
       }}
     >
       {!isLiked ? (

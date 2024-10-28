@@ -8,7 +8,7 @@ import Profile from "pages/Profile/Profile";
 import Notifications from "pages/Notifications/Notifications";
 
 function App() {
-  const authUserId = useSelector((state: RootState) => state.users.authUserId);
+  const authUser = useSelector((state: RootState) => state.users.authUser);
 
   return (
     <div className="md:gap-0 md:max-w-[100%] flex justify-center items-start gap-8 max-w-[90%] h-full min-h-screen m-auto">
@@ -19,7 +19,7 @@ function App() {
           <Route path="/users/:userId" element={<Profile />} />
           <Route
             path="/notifications"
-            element={authUserId ? <Notifications /> : <Navigate to="/" />}
+            element={authUser ? <Notifications /> : <Navigate to="/" />}
           />
           <Route path="/*" element={<Navigate to="/" />} />
         </Routes>

@@ -1,29 +1,24 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { authUserId, token } from "core/utils/localStorage";
+import { token } from "core/utils/localStorage";
 import { IAuthUser, IUserProfile } from "modules/users/types/userTypes";
 
 const usersSlice = createSlice({
   name: "users",
   initialState: {
-    authUser: null,
-    authUserId: authUserId,
     token: token,
+    authUser: null,
     userProfile: null,
   } as {
-    authUser: IAuthUser | null;
-    authUserId: number | null;
     token: string | null;
+    authUser: IAuthUser | null;
     userProfile: IUserProfile | null;
   },
   reducers: {
-    setAuthUser: (state, action: PayloadAction<IAuthUser>) => {
-      state.authUser = action.payload;
-    },
-    setAuthUserId: (state, action: PayloadAction<number>) => {
-      state.authUserId = action.payload;
-    },
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
+    },
+    setAuthUser: (state, action: PayloadAction<IAuthUser>) => {
+      state.authUser = action.payload;
     },
     setUserProfile: (state, action: PayloadAction<IUserProfile | null>) => {
       state.userProfile = action.payload;
@@ -116,17 +111,15 @@ const usersSlice = createSlice({
       }
     },
     logout: (state) => {
-      state.authUser = null;
-      state.authUserId = null;
       state.token = null;
+      state.authUser = null;
     },
   },
 });
 
 export const {
-  setAuthUser,
-  setAuthUserId,
   setToken,
+  setAuthUser,
   setUserProfile,
   resetUnreadNotifications,
   addFollow,

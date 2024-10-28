@@ -19,12 +19,10 @@ function PostDetail() {
   const postComments = useSelector(
     (state: RootState) => state.posts.postComments
   );
-  const authUserId = useSelector((state: RootState) => state.users.authUserId);
+  const authUser = useSelector((state: RootState) => state.users.authUser);
 
   const [searchParams] = useSearchParams();
-  const autoFocus = authUserId
-    ? searchParams.get("autoFocus") === "true"
-    : false;
+  const autoFocus = authUser ? searchParams.get("autoFocus") === "true" : false;
 
   const [postDetailLoading, setPostDetailLoading] = useState(true);
   const [postCommentsLoading, setPostCommentsLoading] = useState(true);
@@ -60,25 +58,23 @@ function PostDetail() {
       {postDetailLoading ? (
         <LoadingSpinner extraClasses="p-8" />
       ) : postDetail ? (
-        <Post
-          post={postDetail}
-          view="detail"
-          setFocusTextarea={setFocusTextarea}
-        />
-      ) : (
-        <p className="pt-4 text-center">Este post no existe</p>
-      )}
-      {authUserId && postDetail ? (
         <>
-          <PostForm
-            view="comment"
-            postId={id}
-            postDetail={postDetail}
-            postDetailLoading={postDetailLoading}
-            autoFocus={autoFocus}
-            focusTextarea={focusTextarea}
+          <Post
+            post={postDetail}
+            view="detail"
             setFocusTextarea={setFocusTextarea}
           />
+          {authUser ? (
+            <PostForm
+              view="comment"
+              postId={id}
+              postDetail={postDetail}
+              postDetailLoading={postDetailLoading}
+              autoFocus={autoFocus}
+              focusTextarea={focusTextarea}
+              setFocusTextarea={setFocusTextarea}
+            />
+          ) : null}
           {postCommentsLoading ? (
             <LoadingSpinner extraClasses="p-8" />
           ) : postComments.length > 0 ? (
@@ -87,7 +83,9 @@ function PostDetail() {
             ))
           ) : null}
         </>
-      ) : null}
+      ) : (
+        <p className="pt-4 text-center">Este post no existe</p>
+      )}
     </div>
   );
 }

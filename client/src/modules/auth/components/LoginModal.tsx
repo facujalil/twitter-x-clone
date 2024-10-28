@@ -1,12 +1,11 @@
 import { Dispatch, FormEvent, SetStateAction, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useModalContext } from "core/context/ModalContext";
-import { setAuthUserId, setToken } from "core/store/usersSlice";
+import { setToken } from "core/store/usersSlice";
 import { login } from "../api/auth.api";
 import Modal from "core/components/Modal";
 import UserForm from "core/components/UserForm";
 import Input from "core/components/Input";
-import { parseJwt } from "core/utils/parseJwt";
 
 interface Props {
   setAppLoading: Dispatch<SetStateAction<boolean>>;
@@ -30,7 +29,6 @@ function LoginModal({ setAppLoading }: Props) {
       .then((data) => {
         setAppLoading(true);
         dispatch(setToken(data.token));
-        dispatch(setAuthUserId(parseJwt(data.token).user_id));
         closeModal();
       })
       .catch((error) => {

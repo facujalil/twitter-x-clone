@@ -11,9 +11,7 @@ import Posts from "modules/posts/components/Posts";
 function Home() {
   const dispatch = useDispatch();
 
-  const { authUserId, authUser } = useSelector(
-    (state: RootState) => state.users
-  );
+  const authUser = useSelector((state: RootState) => state.users.authUser);
   const posts = useSelector((state: RootState) => state.posts.posts);
 
   const { setOpenModal } = useModalContext();
@@ -25,19 +23,22 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    if (authUserId) {
-      getHomePosts(authUserId)
+    if (authUser) {
+      getHomePosts(authUser.user_id)
         .then((data) => dispatch(setPosts(data)))
         .catch((error) => console.error(error))
         .finally(() => setHomePostsLoading(false));
     }
-  }, [authUserId, authUser?.following]);
+  }, [authUser?.following]);
 
   return (
     <div className="w-full h-full">
       <Header title="Inicio" />
-      {authUserId ? (
-        <PostForm view="post" />
+      {authUser ? (
+        <>
+          <PostForm view="post" />
+          <Posts postsLoading={homePostsLoading} posts={posts} />
+        </>
       ) : (
         <>
           <h1 className="pt-8 px-8 mb-4 text-[1.75rem] font-bold text-center border-t border-t-[#2f3336]">
@@ -59,9 +60,6 @@ function Home() {
           </div>
         </>
       )}
-      {authUserId ? (
-        <Posts postsLoading={homePostsLoading} posts={posts} />
-      ) : null}
     </div>
   );
 }

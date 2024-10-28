@@ -13,9 +13,7 @@ import { logout } from "core/store/usersSlice";
 function Sidebar() {
   const dispatch = useDispatch();
 
-  const { authUserId, authUser } = useSelector(
-    (state: RootState) => state.users
-  );
+  const authUser = useSelector((state: RootState) => state.users.authUser);
 
   const { setOpenModal } = useModalContext();
 
@@ -53,12 +51,12 @@ function Sidebar() {
             </NavItem>
           </li>
           <li className="xl:w-auto w-56">
-            <NavItem privateRoute to={`/users/${authUserId}`}>
+            <NavItem privateRoute to={`/users/${authUser?.user_id}`}>
               <BiSolidUser className="text-[1.65rem]" />{" "}
               <span className="xl:hidden text-xl">Perfil</span>
             </NavItem>
           </li>
-          {authUserId ? (
+          {authUser ? (
             <li className="xl:w-auto w-56">
               <button
                 className="xl:aspect-square xl:p-4 xl:rounded-full inline-flex items-center gap-4 py-3 px-4 text-nowrap rounded-full transition hover:bg-[#181818]"
@@ -76,7 +74,7 @@ function Sidebar() {
       </nav>
       <button
         className="xl:w-12 xl:h-12 xl:m-auto w-full p-3 bg-[#1d9bf0] font-medium text-nowrap rounded-full transition hover:opacity-90"
-        onClick={() => setOpenModal(authUserId ? "post" : "login")}
+        onClick={() => setOpenModal(authUser?.user_id ? "post" : "login")}
       >
         <FaFeatherAlt className="xl:flex xl:m-auto hidden" />
         <span className="xl:hidden">Postear</span>

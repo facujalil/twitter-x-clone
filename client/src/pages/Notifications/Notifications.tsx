@@ -14,25 +14,23 @@ import Notification from "./Notification";
 function Notifications() {
   const dispatch = useDispatch();
 
-  const { authUserId, authUser } = useSelector(
-    (state: RootState) => state.users
-  );
+  const authUser = useSelector((state: RootState) => state.users.authUser);
 
   const [notifications, setNotifications] = useState<INotification[]>([]);
   const [notificationsLoading, setNotificationsLoading] = useState(true);
 
   useEffect(() => {
-    if (authUserId)
-      getNotifications(authUserId)
+    if (authUser)
+      getNotifications(authUser.user_id)
         .then((data) => setNotifications(data))
         .catch((error) => console.error(error))
         .finally(() => setNotificationsLoading(false));
-  }, [authUserId]);
+  }, [authUser]);
 
   useEffect(() => {
     document.title = "Notificaciones / Twitter X";
-    if (authUserId && authUser && authUser.unread_notifications > 0) {
-      markNotificationsAsRead(authUserId)
+    if (authUser && authUser.unread_notifications > 0) {
+      markNotificationsAsRead(authUser.user_id)
         .then(() => dispatch(resetUnreadNotifications()))
         .catch((error) => console.error(error));
     }

@@ -13,9 +13,7 @@ import ToggleFollowButton from "modules/users/components/ToggleFollowButton";
 function RecommendedUsers() {
   const navigate = useNavigate();
 
-  const { authUserId, authUser } = useSelector(
-    (state: RootState) => state.users
-  );
+  const authUser = useSelector((state: RootState) => state.users.authUser);
 
   const [recommendedUsers, setRecommendedUsers] = useState<IRecommendedUser[]>(
     []
@@ -27,7 +25,7 @@ function RecommendedUsers() {
       setRecommendedUsersLoading(true);
     }
 
-    getRecommendedUsers(authUserId)
+    getRecommendedUsers(authUser?.user_id)
       .then((data) => setRecommendedUsers(data))
       .catch((error) => console.error(error))
       .finally(() => setRecommendedUsersLoading(false));

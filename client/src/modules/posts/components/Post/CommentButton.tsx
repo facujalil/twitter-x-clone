@@ -14,7 +14,7 @@ interface Props {
 function CommentButton({ post, setFocusTextarea }: Props) {
   const navigate = useNavigate();
 
-  const { authUserId } = useSelector((state: RootState) => state.users);
+  const authUser = useSelector((state: RootState) => state.users.authUser);
 
   const { setOpenModal } = useModalContext();
 
@@ -23,7 +23,7 @@ function CommentButton({ post, setFocusTextarea }: Props) {
       className="flex justify-center items-center gap-[0.4rem] text-[0.95rem] font-medium text-[#71767b] transition hover:text-[#0ea5e9]"
       onClick={(e) => {
         e.stopPropagation();
-        if (authUserId) {
+        if (authUser) {
           navigate(`/posts/${post.post_id}?autoFocus=true`);
           if (setFocusTextarea) {
             setFocusTextarea(true);
